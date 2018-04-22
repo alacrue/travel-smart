@@ -26,6 +26,20 @@
 
 
     <h2><b>Travel the world. Keep it green.</b></h2>
+    <div id = "floating-panel" style="background-color: #4ABDAC; line-height:200px">
+      <div class="milesPerGallon">
+        <b> How many miles per gallon in your vehicle?</b> <br>
+        <input id = "mpg" type = "text" size= 40px /><br>
+      </div>
+  </div>
+
+  <div id = "floating-panel" style="background-color:#FC4A1A; line-height:200px;">
+    <div class="ridersPerCar">
+      <b> How many people are you traveling with?</b> <br>
+      <b> (Including yourself)</b> <br>
+      <input id = "rpc" type = "text" size= 40px /><br>
+    </div>
+</div>
       <div id="floating-panel">
 
     <div class= "location-form">
@@ -35,23 +49,7 @@
     </div>
     </div>
     <div id="map"></div>
-    <div id = "floating-panel" style="background-color: #4ABDAC; line-height:200px">
-    <div class="milesPerGallon">
-      <b> How many miles per gallon in your vehicle?</b> <br>
-      <input id = "mpg" type = "text" size= 40px /><br>
-      <input id = "submitMPG" type="submit"/>
-      <input id = "idk" type="submit" value = "I'm not sure!" />
-    </div>
-  </div>
 
-  <div id = "floating-panel" style="background-color:#FC4A1A; line-height:200px;">
-  <div class="ridersPerCar">
-    <b> How many people are you traveling with?</b> <br>
-    <b> (Including yourself)</b> <br>
-    <input id = "rpc" type = "text" size= 40px /><br>
-    <input id = "submitRPC" type="submit"/>
-  </div>
-</div>
     <div class="footer">
       <p style="font-size:20px"><b>Developed by<br>Annabelle LaCrue<br>and Heather
         Wilson for<br>EarthxHack 2018.</b></p>
@@ -73,6 +71,8 @@
         };
         document.getElementById('start').addEventListener('change', onChangeHandler);
         document.getElementById('end').addEventListener('change', onChangeHandler);
+        document.getElementById('mpg').addEventListener('change', onChangeHandler);
+        document.getElementById('rpc').addEventListener('change', onChangeHandler);
       }
 
       function calculateAndDisplayRoute(directionsService, directionsDisplay) {
@@ -101,19 +101,42 @@
 
       if(status=="OK") {
           dist.value = response.rows[0].elements[0].distance.text;
-          window.alert("It worked! Distance: " + dist.value);
+
+          calculations();
       } else {
           window.alert("Error: " + status);
       }
     }
 
     function calculations(){
-      var carFootprint = 19.96/mpg.value;
-      var cffinal = dist.value/rpc.value;
+
+      var distance= parseInt(dist.value.replace(/,/g, ''), 10);
+      var carFootprint = 19.96 / mpg.value;
+      var cffinal = distance / rpc.value;
       var car = carFootprint * cffinal;
-      var planeFootprint= 77 * 21.1;
-      var pffinal= dist.value/150;
+      var planeFootprint= 21.1 / 77;
+      var pffinal= distance/150;
       var plane = planeFootprint* pffinal;
+      var fcf = document.getElementById("fcf");
+
+
+      if(distance < 300){
+        fcf.value = car.toFixed(2);
+        window.alert("A car would be your best option! Your total carbon footprint would be about " + fcf.value + " pounds of CO2 emission.");
+      }
+      else if(car < plane){
+        // pop up blurb saying car is the best with so and so many pounds of CO2 emission
+          fcf.value = car.toFixed(2);
+          window.alert("A car would be your best option! Your total carbon footprint would be about " + fcf.value + " pounds of CO2 emission.");
+      }
+      else{
+        fcf.value = plane.toFixed(2);
+        window.alert("A plane would be your best option! Your total carbon footprint would be about " + fcf.value + " pounds of CO2 emission. Book your flight today with SouthWest Airlines! ");
+        // pop up blurb saying plane would be the better option with cf value
+      }
+
+      // window.alert("vals: " + dist.value + ", " + rpc.value + ", " + mpg.value + ", " +  fcf.value);
+
 
     }
 }
@@ -121,10 +144,13 @@
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCkvfVYAIORLMswtkeb9u0dIybATG63Zf8&callback=initMap">
     </script>
-    <!-- <div class= "distanceOutput">
+    <div class= "distanceOutput">
       Distance: <input id="dist" type="text" />
+      Final Carbon Footprint: <input id="fcf" type="text" />
+
     </div>
-    </div> -->
+
 
   </body>
 </html>
+
